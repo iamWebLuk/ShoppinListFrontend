@@ -4,6 +4,7 @@ import axios from "axios";
 import {TextInput, Button, Snackbar} from "react-native-paper";
 import { AuthContext } from "../../AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {IPAddress} from "../../constants/IPAddress";
 
 export default function TryOutScreen() {
 
@@ -11,14 +12,14 @@ export default function TryOutScreen() {
     const [groupId, setGroupId] = useState('');
     const [groupName, setgroupName] = useState("");
     const [description, setdescription]= useState("");
-    const bearerToken = localStorage.getItem("token")
+    const bearerToken = AsyncStorage.getItem("token")
 
     axios.defaults.headers.common['authorization'] = 'Bearer ' + bearerToken;
     const addGroup = (groupName: String, description: String) => {
         // axios.get("http://localhost:8080/group/ping")
         //     .catch(err => console.log(err))
 
-        axios.post(`//localhost:8080/group/addGroup?name=${groupName}&description=${description}`)
+        axios.post(`${IPAddress}:8080/group/addGroup?name=${groupName}&description=${description}`)
             .then((res) => {
                 console.log(res)
             })
