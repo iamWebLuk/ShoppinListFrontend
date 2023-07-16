@@ -2,8 +2,10 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
+import {AuthContext, AuthProvider} from "../AuthContext";
+import LoginScreen from "./LoginScreen";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -16,6 +18,7 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+  const {userToken, isLoading} = useContext(AuthContext);
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -26,26 +29,38 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+  console.log(userToken)
+  console.log("^usertoken")
   return (
     <>
+      <AuthProvider>
       {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
       {!loaded && <SplashScreen />}
-      {loaded && <RootLayoutNav />}
+      {loaded && <RootLayoutNav /> }
+      </AuthProvider>
     </>
   );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const {userToken, isLoading} = useContext(AuthContext);
 
   return (
-    <>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <>
+      {userToken === '' ?
+          <LoginScreen />
+          :
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="addGroup" options={{ presentation: "card"}} />
+          <Stack.Screen name="groupView" options={{ presentation: "card"}} />
         </Stack>
       </ThemeProvider>
+
+      }
     </>
   );
 }
