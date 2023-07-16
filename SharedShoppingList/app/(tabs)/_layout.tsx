@@ -2,7 +2,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable, useColorScheme } from 'react-native';
 
-import Colors from '../../constants/Colors';
+import { Colors } from '../../constants/Colors';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -50,6 +50,27 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
+        <Tabs.Screen
+            name="GroupScreen"
+            options={{
+                title: 'Group',
+                tabBarIcon: ({ color }) => <TabBarIcon name="group" color={color} />,
+                headerRight: () => (
+                    <Link href="/addGroupScreen" asChild>
+                        <Pressable>
+                            {({ pressed }) => (
+                            <FontAwesome
+                                name="plus"
+                                size={25}
+                                // color={color}
+                                style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                            />
+                            )}
+                        </Pressable>
+                    </Link>
+                ),
+            }}
+        />
     </Tabs>
   );
 }

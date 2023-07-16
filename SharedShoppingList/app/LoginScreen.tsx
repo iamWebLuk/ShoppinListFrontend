@@ -1,4 +1,4 @@
-import React, {Dispatch, SetStateAction, useContext, useState} from 'react';
+import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { View } from '../components/Themed';
 
 import {
@@ -11,13 +11,12 @@ import {
 } from "react-native-paper";
 import { AuthContext } from "../AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import colors from "../constants/Colors";
-// import colors from "../constants/Colors";
-import { PreferencesContext } from "./_layout";
+import { colorTheme } from "../constants/Colors";
+// import { PreferencesContext } from "./_layout";
 
 interface LoginScreenProps {
-    isDarkMode: boolean
-    setIsDarkMode: Dispatch<SetStateAction<boolean>>
+    isDarkMode?: boolean
+    setIsDarkMode?: Dispatch<SetStateAction<boolean>>
 }
 export default function LoginScreen({isDarkMode, setIsDarkMode}: LoginScreenProps) {
 
@@ -27,11 +26,11 @@ export default function LoginScreen({isDarkMode, setIsDarkMode}: LoginScreenProp
     const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
     const [jwtToken, setJwtToken] = useState('');
     const [isSecurePassword, setIsSecurePassword] = useState(true);
-    const { toggleTheme, isDarkTheme } = useContext(PreferencesContext)
+    // const { toggleTheme, isDarkTheme } = useContext(PreferencesContext)
     // const { colors } = useTheme();
-    const theme = useTheme();
+    // const theme = useTheme();
     const mockDarkMode = true;
-    const {login} = useContext(AuthContext);
+    const {login, register} = useContext(AuthContext);
     const disableSnackbar = () => {
         setIsSnackbarVisible(false);
     }
@@ -41,9 +40,6 @@ export default function LoginScreen({isDarkMode, setIsDarkMode}: LoginScreenProp
       setIsSecurePassword(!isSecurePassword)
 
     }
-    console.log(theme.dark)
-    console.log("^theme")
-
     const getToken = async () => {
         try {
             await AsyncStorage.removeItem('token');
@@ -62,35 +58,33 @@ export default function LoginScreen({isDarkMode, setIsDarkMode}: LoginScreenProp
         }
     };
 
-    console.log(isDarkTheme)
-    console.log("^ isDarkTheme")
+    // console.log(isDarkTheme)
+    // console.log("^ isDarkTheme")
     return (
         <View>
-            <Text style={{color: theme.colors.primary}}>This is a test!</Text>
+            <Text style={{color: colorTheme.background}}>This is a test!</Text>
             <TextInput
                 placeholderTextColor={'white'}
-                textColor={theme.colors.primary} label='Username' value={username} onChange={(e) => setUsername(e.nativeEvent.text)}/>
+                textColor={colorTheme.text} label='Username' value={username} onChange={(e) => setUsername(e.nativeEvent.text)}/>
             <View>
             <TextInput
                 secureTextEntry={isSecurePassword}
                 label='Password'
                 value={password}
-                placeholderTextColor={theme.colors.onSurface}
+                placeholderTextColor={colorTheme.button}
                 onChange={(e) => setPassword(e.nativeEvent.text)}
-                right={<TextInput.Icon color={theme.colors.onSurface} icon={isSecurePassword ? 'eye' : 'eye-off'} onPress={() => disableHiddenPassword()} />}
+                right={<TextInput.Icon color={colorTheme.button} icon={isSecurePassword ? 'eye' : 'eye-off'} onPress={() => disableHiddenPassword()} />}
             />
 
             </View>
                 <Button icon='camera'
                     mode='contained'
                     onPress={() => login(username,password)}>Login</Button>
-            <Button icon='camera' mode='contained' onPress={() =>{
-                console.log(colors)
-            }}>Click me</Button>
             <Button icon='camera' mode='contained' onPress={removeUser}>Click me</Button>
-            <Switch color={'red'} value={isDarkTheme} onValueChange={toggleTheme} />
+            <Button icon='camera' mode='contained' onPress={register}>register</Button>
+            {/*<Switch color={'red'} value={isDarkTheme} onValueChange={toggleTheme} />*/}
             <TextInput
-                theme={{colors: {primary: theme?.colors.surface,},}}
+                // theme={{colors: {primary: theme?.colors.surface,},}}
                 placeholder={"Password"}
             />
             <Snackbar
