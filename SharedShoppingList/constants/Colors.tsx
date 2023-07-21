@@ -6,6 +6,7 @@ const tintColorDark = '#fff';
 export const Colors =  {
   light: {
     text: '#000',
+    surface: '#808080',
     background: '#fff',
     tint: tintColorLight,
     tabIconDefault: '#ccc',
@@ -13,7 +14,8 @@ export const Colors =  {
     button: '#4f9533'
   },
   dark: {
-    text: '#fff',
+    text: '#ffffff',
+    surface: '#212124',
     background: '#000',
     tint: tintColorDark,
     tabIconDefault: '#ccc',
@@ -22,6 +24,10 @@ export const Colors =  {
   },
 };
 
-const color = useColorScheme();
-export const colorTheme = color === 'dark' ? Colors.dark : Colors.light;
+// const color = useColorScheme();
+// export const colorTheme = color === 'dark' ? Colors.dark : Colors.light;
 
+export const useColors = () => {
+  const color = useColorScheme();
+  return color === 'dark' ? Colors.dark : Colors.light
+}

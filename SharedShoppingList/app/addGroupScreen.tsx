@@ -3,9 +3,8 @@ import {Animated, View} from "react-native";
 import {Button, Text, TextInput} from "react-native-paper";
 import {IPAddress} from "../constants/IPAddress";
 import axios from "axios";
-import add = Animated.add;
 import {useNavigation, useRouter} from "expo-router";
-import {useAuth} from "../AuthContext";
+import {useAuth} from "./AuthContext";
 
 const AddGroupScreen = () => {
 
@@ -17,7 +16,7 @@ const AddGroupScreen = () => {
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: `${IPAddress}:8080/group/addGroup?name=${groupName}&description=${description}&userId=${userId}`,
+        url: `${IPAddress}/group/addGroup?name=${groupName}&description=${description}&userId=${userId}`,
         headers: {
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWthc0B3ZWJlci5jb20iLCJleHAiOjE2OTAwNjc2MDQsImlhdCI6MTY4OTE2NjQyN30.k5pzJO3GLynmsuc5UH0uId2guY9u5phm7t2rI8L6hf8'
         }
@@ -38,9 +37,9 @@ const AddGroupScreen = () => {
     return (
         <View>
             <Text variant='titleLarge' style={{textAlign: 'center'}}>Add a new Group</Text>
-            <TextInput mode='outlined' style={{margin: '10dp'}} placeholder='Group Name'  onChange={(e) => setGroupName(e.nativeEvent.text)}/>
-            <TextInput mode='outlined' style={{margin: '10dp'}} placeholder='Group Description'  onChange={(e) => setDescription(e.nativeEvent.text)}/>
-            <Button onPress={addGroup} mode='contained' style={{margin: '10dp'}}>Add Group</Button>
+            <TextInput mode='outlined' style={{margin: 10}} placeholder='Group Name'  onChange={(e) => setGroupName(e.nativeEvent.text)}/>
+            <TextInput mode='outlined' style={{margin: 10}} placeholder='Group Description'  onChange={(e) => setDescription(e.nativeEvent.text)}/>
+            <Button onPress={addGroup} mode='contained' style={{margin: 10}}>Add Group</Button>
         </View>
     );
 };

@@ -2,7 +2,6 @@ import React, {useContext, useEffect, useState} from 'react';
 import { Text, View } from '../../components/Themed';
 import axios from "axios";
 import {TextInput, Button, Snackbar} from "react-native-paper";
-import { AuthContext } from "../../AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {IPAddress} from "../../constants/IPAddress";
 
@@ -19,7 +18,7 @@ export default function TryOutScreen() {
         // axios.get("http://localhost:8080/group/ping")
         //     .catch(err => console.log(err))
 
-        axios.post(`${IPAddress}:8080/group/addGroup?name=${groupName}&description=${description}`)
+        axios.post(`${IPAddress}/group/addGroup?name=${groupName}&description=${description}`)
             .then((res) => {
                 console.log(res)
             })

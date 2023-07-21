@@ -2,7 +2,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable, useColorScheme } from 'react-native';
 
-import { Colors } from '../../constants/Colors';
+import {Colors, useColors} from '../../constants/Colors';
+import {useTheme} from "react-native-paper";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -16,7 +17,8 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  // const colortheme = useTheme();
+    const colors = useColors();
   return (
     <Tabs
       screenOptions={{
@@ -51,7 +53,7 @@ export default function TabLayout() {
         }}
       />
         <Tabs.Screen
-            name="GroupScreen"
+            name="group"
             options={{
                 title: 'Group',
                 tabBarIcon: ({ color }) => <TabBarIcon name="group" color={color} />,
@@ -62,7 +64,7 @@ export default function TabLayout() {
                             <FontAwesome
                                 name="plus"
                                 size={25}
-                                // color={color}
+                                color={colors.text}
                                 style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                             />
                             )}

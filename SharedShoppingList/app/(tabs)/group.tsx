@@ -4,10 +4,10 @@ import { Divider, List, Text } from "react-native-paper";
 import { View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IPAddress } from "../../constants/IPAddress";
-import { useAuth } from "../../AuthContext";
+import { useAuth } from "../AuthContext";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter} from "expo-router";
-import { colorTheme } from '../../constants/Colors'
+import { useColors } from '../../constants/Colors'
 
 type Group = {
     id: number
@@ -15,12 +15,13 @@ type Group = {
     groupDescription: String;
 
 }
-const GroupScreen = () => {
+const Group = () => {
 
     // const [userId, setUserId] = useState(5);
     const [data, setData] = useState([])
     const [bearerToken, setBearerToken] = useState('');
     const {userId} = useAuth();
+    const colors = useColors();
     const isFocused = useIsFocused();
     const router = useRouter();
 
@@ -41,7 +42,7 @@ const GroupScreen = () => {
     let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `${IPAddress}:8080/group/getGroups?userId=${userId}`,
+        url: `${IPAddress}/group/getGroups?userId=${userId}`,
         headers: {
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWthc0B3ZWJlci5jb20iLCJleHAiOjE2OTAwNjc2MDQsImlhdCI6MTY4OTE2NjQyN30.k5pzJO3GLynmsuc5UH0uId2guY9u5phm7t2rI8L6hf8'
         }
@@ -70,7 +71,7 @@ const GroupScreen = () => {
         <>
             {data.map((res: Group) => (
                 <View>
-                    <List.Item title={res.groupName} description={res.groupDescription} onPress={() => router.push({pathname: 'groupView', params: {groupId: res.id}} )} titleStyle={{color: colorTheme.text}}/>
+                    <List.Item title={res.groupName} description={res.groupDescription} onPress={() => router.push({pathname: 'groupView', params: {groupId: res.id}} )} titleStyle={{color: colors.text}}/>
                     <Divider/>
                     <Text>
                     </Text>
@@ -80,4 +81,4 @@ const GroupScreen = () => {
     );
 };
 
-export default GroupScreen;
+export default Group;

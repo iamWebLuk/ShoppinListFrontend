@@ -1,11 +1,15 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import {DarkTheme, DefaultTheme, NavigationContainer, ThemeProvider} from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import { useContext, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import {AuthContext, AuthProvider} from "../AuthContext";
-import LoginScreen from "./LoginScreen";
+import { AuthProvider, useAuth } from "./AuthContext";
+// import Login from "./login";
+import {createNativeStackNavigator} from "react-native-screens/native-stack";
+import Login from "./login";
+
+const Screen = createNativeStackNavigator();
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -18,7 +22,7 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const {userToken, isLoading} = useContext(AuthContext);
+  const [appisReady, setAppIsReady] = useState(false);
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -29,14 +33,20 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  console.log(userToken)
-  console.log("^usertoken")
+useEffect(() =>  {
+  if (loaded) {
+    SplashScreen.hideAsync();
+  }
+},[loaded])
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
     <>
       <AuthProvider>
-      {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
-      {!loaded && <SplashScreen />}
-      {loaded && <RootLayoutNav /> }
+        <RootLayoutNav />
       </AuthProvider>
     </>
   );
@@ -44,23 +54,19 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const {userToken, isLoading} = useContext(AuthContext);
-
+  const {authState, onLogout} = useAuth();
   return (
       <>
-      {userToken === '' ?
-          <LoginScreen />
-          :
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="addGroup" options={{ presentation: "card"}} />
-          <Stack.Screen name="groupView" options={{ presentation: "card"}} />
-        </Stack>
+          <NavigationContainer independent={true}>
+              {authState?.authenticated === null ? (
+                  <Screen.Screen name={'login'} component={Login} />
+            ) : (
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            )
+            }
+          </NavigationContainer>
       </ThemeProvider>
-
-      }
     </>
   );
 }

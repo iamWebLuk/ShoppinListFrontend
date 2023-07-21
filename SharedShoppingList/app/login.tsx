@@ -5,49 +5,30 @@ import {
     TextInput,
     Button,
     Snackbar,
-    useTheme,
     Text,
-    Switch, adaptNavigationTheme
 } from "react-native-paper";
-import { AuthContext } from "../AuthContext";
+import { useAuth } from "./AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { colorTheme } from "../constants/Colors";
-// import { PreferencesContext } from "./_layout";
+import {useColors} from "../constants/Colors";
 
 interface LoginScreenProps {
     isDarkMode?: boolean
     setIsDarkMode?: Dispatch<SetStateAction<boolean>>
 }
-export default function LoginScreen({isDarkMode, setIsDarkMode}: LoginScreenProps) {
+const Login = ({isDarkMode, setIsDarkMode}: LoginScreenProps) => {
 
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
-    const [jwtToken, setJwtToken] = useState('');
     const [isSecurePassword, setIsSecurePassword] = useState(true);
-    // const { toggleTheme, isDarkTheme } = useContext(PreferencesContext)
-    // const { colors } = useTheme();
-    // const theme = useTheme();
-    const mockDarkMode = true;
-    const {login, register} = useContext(AuthContext);
-    const disableSnackbar = () => {
-        setIsSnackbarVisible(false);
-    }
+    const colors = useColors();
+    const {onLogin, onRegister} = useAuth();
 
 
     const disableHiddenPassword = () => {
       setIsSecurePassword(!isSecurePassword)
 
-    }
-    const getToken = async () => {
-        try {
-            await AsyncStorage.removeItem('token');
-            const userToken = await AsyncStorage.getItem('token')
-            console.log(userToken)
-        } catch (error) {
-            console.log(error)
-        }
     }
 
     const removeUser = async () => {
@@ -58,30 +39,31 @@ export default function LoginScreen({isDarkMode, setIsDarkMode}: LoginScreenProp
         }
     };
 
-    // console.log(isDarkTheme)
-    // console.log("^ isDarkTheme")
     return (
+        <>
         <View>
-            <Text style={{color: colorTheme.background}}>This is a test!</Text>
             <TextInput
-                placeholderTextColor={'white'}
-                textColor={colorTheme.text} label='Username' value={username} onChange={(e) => setUsername(e.nativeEvent.text)}/>
+                placeholderTextColor={colors.text}
+                textColor={colors.text} label='Username' value={username} onChange={(e) => setUsername(e.nativeEvent.text)}
+                style={{margin: 10, backgroundColor: colors.surface, color: 'white'}}
+            />
             <View>
             <TextInput
                 secureTextEntry={isSecurePassword}
                 label='Password'
                 value={password}
-                placeholderTextColor={colorTheme.button}
+                placeholderTextColor={colors.text}
                 onChange={(e) => setPassword(e.nativeEvent.text)}
-                right={<TextInput.Icon color={colorTheme.button} icon={isSecurePassword ? 'eye' : 'eye-off'} onPress={() => disableHiddenPassword()} />}
+                right={<TextInput.Icon color={colors.surface} icon={isSecurePassword ? 'eye' : 'eye-off'} onPress={() => disableHiddenPassword()} />}
+                style={{margin: 10}}
             />
 
             </View>
                 <Button icon='camera'
                     mode='contained'
-                    onPress={() => login(username,password)}>Login</Button>
+                    onPress={() => onLogin && onLogin(username,password)}>Login</Button>
             <Button icon='camera' mode='contained' onPress={removeUser}>Click me</Button>
-            <Button icon='camera' mode='contained' onPress={register}>register</Button>
+            <Button icon='camera' mode='contained' onPress={onRegister}>register</Button>
             {/*<Switch color={'red'} value={isDarkTheme} onValueChange={toggleTheme} />*/}
             <TextInput
                 // theme={{colors: {primary: theme?.colors.surface,},}}
@@ -97,8 +79,13 @@ export default function LoginScreen({isDarkMode, setIsDarkMode}: LoginScreenProp
                         setIsSnackbarVisible(false)
                     },
                 }}>
+                <Text>
                 Bad Credentials
+                </Text>
             </Snackbar>
         </View>
+            </>
     );
 };
+
+export default Login;

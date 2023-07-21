@@ -1,27 +1,25 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IPAddress } from "./constants/IPAddress";
-interface AuthContextType {
-    userToken: string | null;
-    isLoading: boolean;
-    login: (username: String, password: String) => Promise<void>;
-    logout: () => void;
-    register: () => void;
-    userId: number;
+import { IPAddress } from "../constants/IPAddress";
+import * as SecureStore from 'expo-secure-store';
+
+interface AuthContextProps {
+    userToken?: string | null;
+    onIsLoading?: boolean;
+    authState?: {token: string | null; authenticated: boolean | null},
+    onLogin?: (username: String, password: String) => Promise<void>;
+    onLogout?: () => void;
+    onRegister?: () => void;
+    userId?: number;
 }
 
+const TOKEN_KEY = 'my-jwt'
+
+const AuthContext = createContext<AuthContextProps>({});
 export const useAuth = () => {
     return useContext(AuthContext)
 }
-export const AuthContext = createContext<AuthContextType>({
-    userToken: '',
-    isLoading: false,
-    login: async () => {},
-    logout: () => {},
-    register: () => {},
-    userId: 0,
-});
 
 export const AuthProvider = ({ children }: React.PropsWithChildren) => {
     const [authState, setAuthState] = useState<{
@@ -31,30 +29,45 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         token: null,
         authenticated: null
     })
+
+    useEffect(() => {
+        const loadToken = async () => {
+            const token = await SecureStore.getItemAsync(TOKEN_KEY);
+            console.log("stored: " + token)
+
+            if (token) {
+                axios.defaults.headers.common['Authorization'] =`Bearer ${token}`
+
+                setAuthState({
+                    token: token,
+                    authenticated: true
+                })
+            }
+        }
+    },[])
+
     const [userToken, setUserToken] = useState<string | null>('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
     const [userId, setUserId] = useState(0);
     const login = async (username: string, password: string) => {
-            console.log(username)
-            console.log(password)
-            console.log("authcontext")
-            const json = JSON.stringify({email: username, password: password})
         try {
-        // const response =  await axios.post("//localhost:8080/api/auth/login",
-        const response =  await axios.post(`${IPAddress}:8080/api/auth/login`,
+        const response =  await axios.post(`${IPAddress}/api/auth/login`,
                 {email: username.toLowerCase(), password: password}, {headers: {'Content-Type': 'application/json'}
                 });
-            console.log(response)
             if (response.status === 200) {
-                console.log("jow")
-                    await AsyncStorage.setItem("token", response.data.token)
+                setAuthState({
+                    token: response.data.token,
+                    authenticated: true
+                });
+                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+                await SecureStore.setItemAsync(TOKEN_KEY, response.data.token)
+
                 const token = await AsyncStorage.getItem('token')
                 console.log(response.data.token)
                 setUserToken(response.data.token)
                 setUserId(response.data.id)
-                console.log(userToken)
-                console.log("hihi")
+                return response;
             } else {
                 console.log("woj")
             }
@@ -63,30 +76,24 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
                     setIsSnackbarVisible(true)
                 }
         }
-                // .then((res) => {
-                //     console.log(res)
-                //     setUserToken(res.data.token)
-                //     console.log("it worked")
-                // })
-                // .catch((err) => {
-                //     console.log(err)
-                //     console.log(typeof err)
-                //     if (err.request.status == '401') {
-                //         console.log('Bad Credentials');
-                //         setIsSnackbarVisible(true)
-                //     }
-                    // console.log(err +  " this is a error");
 
     }
 
-    const logout = () => {
+    const logout = async () => {
+        await SecureStore.deleteItemAsync(TOKEN_KEY);
+        axios.defaults.headers.common['Authorization'] = '';
+
+        setAuthState({
+            token: null,
+            authenticated: false
+        })
         // https://www.youtube.com/watch?v=9vydY9SDtAo
         // https://www.youtube.com/watch?v=QMUii9fSKfQ&t=242s
     }
 
     const register = async (email: string, password: string) => {
         try {
-            return await axios.post(`${IPAddress}:8080/api/auth/registration`, JSON.stringify({
+            return await axios.post(`${IPAddress}/api/auth/registration`, JSON.stringify({
                 "firstName": "lukas",
                 "lastName": "weber",
                 "password": `${password}`,
@@ -98,8 +105,18 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         }
     }
 
+    const value = {
+        onRegister: register,
+        onLogin: login,
+        onLogout: logout,
+        authState,
+        userId,
+        userToken,
+        isLoading}
+
+
     // @ts-ignore
-    return <AuthContext.Provider value={{userId, userToken, isLoading, login, logout, register}}>
+    return <AuthContext.Provider value={value}>
         {children}
     </AuthContext.Provider>
 };
