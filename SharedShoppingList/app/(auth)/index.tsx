@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
-import { View } from '../components/Themed';
+import { View } from '../../components/Themed';
 
 import {
     TextInput,
@@ -7,9 +7,9 @@ import {
     Snackbar,
     Text,
 } from "react-native-paper";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useColors} from "../constants/Colors";
+import {useColors} from "../../constants/Colors";
 
 interface LoginScreenProps {
     isDarkMode?: boolean
@@ -38,6 +38,8 @@ const Login = ({isDarkMode, setIsDarkMode}: LoginScreenProps) => {
             console.log(error);
         }
     };
+
+    console.log("show me")
 
     return (
         <>

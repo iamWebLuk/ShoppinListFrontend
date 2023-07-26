@@ -2,6 +2,7 @@
   "name": "sharedshoppinglist",
   "version": "1.0.0",
   "scripts": {
+    "testen": "REACT_NATIVE_PACKAGER_HOSTNAME=172.23.208.1 expo start",
     "start": "expo start",
     "tunnel": "expo start --tunnel",
     "android": "expo start --android",

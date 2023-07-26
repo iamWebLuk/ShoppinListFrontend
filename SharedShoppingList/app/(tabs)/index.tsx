@@ -9,6 +9,8 @@ import { useAuth } from "../AuthContext";
 export default function TabOneScreen() {
   const {userToken} = useAuth();
 
+  console.log("tabs index")
+
   const usertoken = () => {
     if (userToken) {
       console.log("abc")

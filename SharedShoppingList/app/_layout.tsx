@@ -2,12 +2,11 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {DarkTheme, DefaultTheme, NavigationContainer, ThemeProvider} from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { AuthProvider, useAuth } from "./AuthContext";
 // import Login from "./login";
 import {createNativeStackNavigator} from "react-native-screens/native-stack";
-import Login from "./login";
 
 const Screen = createNativeStackNavigator();
 
@@ -21,8 +20,9 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
-  const [appisReady, setAppIsReady] = useState(false);
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -33,20 +33,22 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-useEffect(() =>  {
-  if (loaded) {
-    SplashScreen.hideAsync();
-  }
-},[loaded])
-
   if (!loaded) {
     return null;
+  }
+
+  if (loaded) {
+    console.log("ich bin geladen")
   }
 
   return (
     <>
       <AuthProvider>
-        <RootLayoutNav />
+          {!loaded && <SplashScreen />}
+      {loaded && <RootLayoutNav />}
+      {/*<AuthProvider>*/}
+      {/*  <RootLayoutNav />*/}
+      {/*</AuthProvider>*/}
       </AuthProvider>
     </>
   );
@@ -60,9 +62,14 @@ function RootLayoutNav() {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <NavigationContainer independent={true}>
               {authState?.authenticated === null ? (
-                  <Screen.Screen name={'login'} component={Login} />
+                  <Stack>
+                    <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  </Stack>
             ) : (
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack>
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+                </Stack>
             )
             }
           </NavigationContainer>
