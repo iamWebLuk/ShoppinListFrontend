@@ -24,11 +24,13 @@ const Group = () => {
     const colors = useColors();
     const isFocused = useIsFocused();
     const router = useRouter();
-
+    const {authState} = useAuth();
     useEffect(() => {
         const getData = async () => {
             try {
                 const value = await AsyncStorage.getItem('token');
+                console.log("this is the value:")
+                console.log(value)
                 if (value !== null) {
                     setBearerToken(value)
                 }
@@ -37,6 +39,7 @@ const Group = () => {
                 console.log(e)
             }
         };
+        getData();
     }, [])
 
     let config = {
@@ -44,16 +47,21 @@ const Group = () => {
         maxBodyLength: Infinity,
         url: `${IPAddress}/group/getGroups?userId=${userId}`,
         headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWthc0B3ZWJlci5jb20iLCJleHAiOjE2OTAwNjc2MDQsImlhdCI6MTY4OTE2NjQyN30.k5pzJO3GLynmsuc5UH0uId2guY9u5phm7t2rI8L6hf8'
+            'Authorization': `Bearer ${authState?.token}`
         }
     };
 
-    console.log(bearerToken)
-    console.log("^bearre token")
+    console.log("This is the authstate token:");
+    console.log(authState?.token)
+
+    console.log("thats data")
+    console.log(data)
 
     // axios.defaults.headers.common['Authorization'] = 'Bearer ' + bearerToken;
 
     useEffect(() => {
+        console.log("user id:");
+        console.log(userId)
             // axios.request(config)
         // axios.get(`${IPAddress}:8080/group/getGroups?userId=${userId}`)
         axios.request(config)

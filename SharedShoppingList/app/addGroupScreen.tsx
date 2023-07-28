@@ -26,7 +26,7 @@ const AddGroupScreen = () => {
         axios.request(config)
             .then((response) => {
                 console.log(JSON.stringify(response.data));
-                router.replace('GroupScreen')
+                // router.replace('GroupScreen')
             })
             .catch((error) => {
                 console.log(error);

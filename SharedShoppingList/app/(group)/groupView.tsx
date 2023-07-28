@@ -4,8 +4,10 @@ import {Avatar, Button, Divider, List, Text} from "react-native-paper";
 import {useLocalSearchParams, useNavigation, useRouter} from "expo-router";
 // import {colorTheme} from "../constants/Colors";
 import axios from "axios";
-import {IPAddress} from "../constants/IPAddress";
-import {useColors} from "../constants/Colors";
+import {IPAddress} from "../../constants/IPAddress";
+import {useColors} from "../../constants/Colors";
+import {useAuth} from "../AuthContext";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type Item = {
     id: number;
@@ -31,6 +33,7 @@ const GroupView = () => {
     const params = useLocalSearchParams();
     const [itemId, setItemId] = useState(0);
     const colors = useColors();
+    const {authState} = useAuth();
     console.log(colors)
     const iconSymbol = (category: string) => {
         console.log(category)
@@ -72,7 +75,7 @@ const GroupView = () => {
         maxBodyLength: Infinity,
         url: `${IPAddress}/item/getItems?groupId=${params.groupId}`,
         headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWthc0B3ZWJlci5jb20iLCJleHAiOjE2OTAwNjc2MDQsImlhdCI6MTY4OTE2NjQyN30.k5pzJO3GLynmsuc5UH0uId2guY9u5phm7t2rI8L6hf8'
+            'Authorization': `Bearer ${authState?.token}`
         }
     };
 
@@ -81,21 +84,23 @@ const GroupView = () => {
         maxBodyLength: Infinity,
         url: `${IPAddress}/group/getUsers?groupId=${params.groupId}`,
         headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWthc0B3ZWJlci5jb20iLCJleHAiOjE2OTAwNjc2MDQsImlhdCI6MTY4OTE2NjQyN30.k5pzJO3GLynmsuc5UH0uId2guY9u5phm7t2rI8L6hf8'
+        'Authorization': `Bearer ${authState?.token}`
         }
     }
 
 
     useEffect(() => {
+        console.log(authState?.token)
         axios.request(config)
             .then(res => {
                 setData(res.data)
             })
             .catch(err => {
                 console.log(err)
-            })
+            });
         axios.request(getUsers)
             .then(res => {
+                console.log("res:" + res)
                 setUsers(res.data)
             })
             .catch(err => {
@@ -106,7 +111,7 @@ const GroupView = () => {
     const deleteItem = (selectedItem: number) => {
         axios.delete(`${IPAddress}/item/deleteItem?itemId=${selectedItem}&groupId=${params.groupId}`,{
             headers: {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWthc0B3ZWJlci5jb20iLCJleHAiOjE2OTAwNjc2MDQsImlhdCI6MTY4OTE2NjQyN30.k5pzJO3GLynmsuc5UH0uId2guY9u5phm7t2rI8L6hf8'
+                'Authorization': `Bearer ${authState?.token}`
             }
         })
             .then(res => {
@@ -120,7 +125,7 @@ const GroupView = () => {
     const addItem = () => {
         axios.post(`${IPAddress}/group/1/item?itemName=lippenstift&itemCategory=BEAUTY`,{
             headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsdWthc0B3ZWJlci5jb20iLCJleHAiOjE2OTAwNjc2MDQsImlhdCI6MTY4OTE2NjQyN30.k5pzJO3GLynmsuc5UH0uId2guY9u5phm7t2rI8L6hf8'
+            'Authorization': `Bearer ${authState?.token}`
             }
         })
             .then(res => console.log(res))
@@ -131,8 +136,8 @@ const GroupView = () => {
         <>
             <View>
                 <View style={styles.container}>
-                {users.map((user: User)=> (
-                    <View style={{margin: 2}}>
+                {users.map((user: User, index)=> (
+                    <View style={index !== 0 ? {margin: 2, marginRight: -20} : {marginRight: 10}} >
                         <Avatar.Text label={(user.firstName.charAt(0) + user.lastName.charAt(0)).toUpperCase()} size={40} style={{backgroundColor: user.iconColor ?? 'green'}} />
                     </View>
                         ))
@@ -140,20 +145,22 @@ const GroupView = () => {
                 </View>
                 { data.length === 0 ? (
                     <View style={{alignContent: 'center'}}>
-                        <Text variant="headlineMedium" style={{color: colors.text}} >No items</Text>
+                        <Text variant="headlineMedium" style={{color: colors.text, textAlign: 'center'}} >No items</Text>
+                        <Button onPress={() => router.push({pathname: 'addItem', params: {groupId: params.groupId}})}>Add item</Button>
                     </View>
                     ) :
                 <>
                 {data.map((item: Item) => (
                     <>
-                      <List.Item title={item.itemName} description={item.id} titleStyle={{color: colors.text}}
+                        <Divider />
+                      <List.Item title={item.itemName} titleStyle={{color: colors.text}}
+                                 style={{paddingLeft: 20}}
                                  left={() => iconSymbol(item.category)}
                                  right={() => <Button
-                                     color={colors.button}
+                                     style={{paddingRight: -10}}
                                      onPress={() => {
-                                     const selectedItemId = item.id;
                                      deleteItem(item.id)
-                                 }}>click me</Button>}
+                                 }}><FontAwesome name={'trash'} size={25} style={{paddingTop: 10}} color={colors.delete} /></Button>}
                                  />
                         <Divider />
                     </>
@@ -174,6 +181,7 @@ const styles = StyleSheet.create({
     container: {
         display: 'flex',
         flexDirection: 'row-reverse',
-        marginRight: 10
+        marginBottom: 10,
+        marginTop: 10
     }
 })

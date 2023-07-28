@@ -11,7 +11,8 @@ export const Colors =  {
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
-    button: '#4f9533'
+    button: '#4f9533',
+    delete: '#c21807'
   },
   dark: {
     text: '#ffffff',
@@ -20,7 +21,8 @@ export const Colors =  {
     tint: tintColorDark,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
-    button: '#9f15ec'
+    button: '#9f15ec',
+    delete: '#c21807'
   },
 };
 

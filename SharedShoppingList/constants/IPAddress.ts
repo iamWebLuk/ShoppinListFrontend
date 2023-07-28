@@ -1,8 +1,9 @@
-// export const IPAddress = 'http://192.168.178.68:8080';
+//TODO IP Adresse Stand PC
+export const IPAddress = 'http://192.168.178.68:8080';
 // export const IPAddress = 'http://192.168.178.70:8080';
 // export const IPAddress = '//localhost:8080';
 // export const IPAddress = 'http://192.168.2.61:8080';
-export const IPAddress = 'http://172.23.208.1:8080';
+// export const IPAddress = 'http://172.23.208.1:8080';
 
 //TODO ACHTUNG: Auf Port achten. Entweder 8080 oder 8090
 

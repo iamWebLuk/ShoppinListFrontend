@@ -10,7 +10,8 @@ import {
 import { useAuth } from "../AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useColors} from "../../constants/Colors";
-
+import {useRouter} from "expo-router";
+import {Image} from "react-native";
 interface LoginScreenProps {
     isDarkMode?: boolean
     setIsDarkMode?: Dispatch<SetStateAction<boolean>>
@@ -24,6 +25,7 @@ const Login = ({isDarkMode, setIsDarkMode}: LoginScreenProps) => {
     const [isSecurePassword, setIsSecurePassword] = useState(true);
     const colors = useColors();
     const {onLogin, onRegister} = useAuth();
+    const router = useRouter();
 
 
     const disableHiddenPassword = () => {
@@ -43,7 +45,10 @@ const Login = ({isDarkMode, setIsDarkMode}: LoginScreenProps) => {
 
     return (
         <>
-        <View>
+        <View style={{marginTop: '50%', justifyContent: 'center'}}>
+            <View style={{alignItems: 'center'}}>
+            <Image source={require("../../assets/images/ShoppingBags.jpg")} style={{width: 200, height: 200}}/>
+            </View>
             <TextInput
                 placeholderTextColor={colors.text}
                 textColor={colors.text} label='Username' value={username} onChange={(e) => setUsername(e.nativeEvent.text)}
@@ -55,22 +60,31 @@ const Login = ({isDarkMode, setIsDarkMode}: LoginScreenProps) => {
                 label='Password'
                 value={password}
                 placeholderTextColor={colors.text}
+                textColor={colors.text}
                 onChange={(e) => setPassword(e.nativeEvent.text)}
                 right={<TextInput.Icon color={colors.surface} icon={isSecurePassword ? 'eye' : 'eye-off'} onPress={() => disableHiddenPassword()} />}
-                style={{margin: 10}}
+                style={{margin: 10, backgroundColor: colors.surface, color: 'white'}}
             />
 
             </View>
-                <Button icon='camera'
+                <Button
+                    icon='camera'
                     mode='contained'
-                    onPress={() => onLogin && onLogin(username,password)}>Login</Button>
-            <Button icon='camera' mode='contained' onPress={removeUser}>Click me</Button>
-            <Button icon='camera' mode='contained' onPress={onRegister}>register</Button>
-            {/*<Switch color={'red'} value={isDarkTheme} onValueChange={toggleTheme} />*/}
-            <TextInput
-                // theme={{colors: {primary: theme?.colors.surface,},}}
-                placeholder={"Password"}
-            />
+                    buttonColor={colors.button}
+                    onPress={() => onLogin && onLogin(username,password)}
+                    style={{margin: 10}}
+                >
+                    Login
+                </Button>
+
+                <Button icon='pen'
+                        mode='contained'
+                        buttonColor={colors.button}
+                        onPress={() => {router.push("/register")}}
+                        style={{margin: 10}}
+                >
+                    register
+                </Button>
             <Snackbar
                 visible={isSnackbarVisible}
                 onDismiss={() => setIsSnackbarVisible(false)}

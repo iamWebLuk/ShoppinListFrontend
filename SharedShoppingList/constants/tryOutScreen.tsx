@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../components/Themed';
 import axios from "axios";
 import {TextInput, Button, Snackbar} from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {IPAddress} from "../../constants/IPAddress";
+import {IPAddress} from "./IPAddress";
 
 export default function TryOutScreen() {
 

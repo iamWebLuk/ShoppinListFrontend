@@ -21,6 +21,7 @@ export default function TabLayout() {
     const colors = useColors();
   return (
     <Tabs
+        initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
       }}>
@@ -58,7 +59,7 @@ export default function TabLayout() {
                 title: 'Group',
                 tabBarIcon: ({ color }) => <TabBarIcon name="group" color={color} />,
                 headerRight: () => (
-                    <Link href="/addGroupScreen" asChild>
+                    <Link href="/SharedShoppingList/app/addGroupScreen">
                         <Pressable>
                             {({ pressed }) => (
                             <FontAwesome
